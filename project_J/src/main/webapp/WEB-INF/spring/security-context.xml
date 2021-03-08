@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+	<!-- <bean id="customAccessDenied" class="com.company.security.CustomAccessDeniedHandler"></bean> -->
+	<bean id="bcryptPasswordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"></bean>
+	
+	<security:http>
+		<security:intercept-url pattern="/sample/admin" access="hasRole('ROLE_ADMIN')"/>		
+		<security:intercept-url pattern="/" access="permitAll"/>
+		<security:intercept-url pattern="/**" access="permitAll"/>
+		
+		<!-- <security:access-denied-handler error-page="/accessError"/> -->
+		<!-- <security:access-denied-handler ref="customAccessDenied" /> -->
+		
+		<security:form-login
+			login-page="/Login" 
+			username-parameter="account"
+			password-parameter="password"
+		/>
+		
+		<security:logout
+			logout-url="/Logout"
+			invalidate-session="true"
+		/>
+	</security:http>
+
+	
+	<security:authentication-manager>
+		<security:authentication-provider>
+		
+			<security:user-service>
+				<security:user name="admin" password="111111" authorities="ROLE_MEMBER, ROLE_ADMIN"/>
+			</security:user-service>
+			
+			<security:jdbc-user-service data-source-ref="dataSource"
+				users-by-username-query="select account, password from member where account=?"
+				authorities-by-username-query="select*from authorities where account=?"/>
+
+			<security:password-encoder ref="bcryptPasswordEncoder"/>
+
+		</security:authentication-provider>
+	</security:authentication-manager>
+</beans>

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+<mapper namespace="blog">
+	
+<insert id="join">
+	<![CDATA[
+		INSERT INTO member(account, name, email, password) 
+		VALUES(#{account}, #{name}, #{email}, #{password})
+	]]>
+</insert>
+
+<insert id="login">
+	<![CDATA[
+		INSERT INTO authorities(account, auth) 
+		VALUES(#{account}, #{auth})
+	]]>
+</insert>
+
+<!-- 게시글 작성 -->
+<insert id="write" parameterType="com.company.VO.blogVO" useGeneratedKeys="true" keyProperty="w_no">
+	<![CDATA[
+		INSERT INTO writing(account, title, content, date) 
+		VALUES(#{account}, #{title}, #{content}, sysdate())
+	]]>
+
+</insert>
+
+<!-- 파일등록 -->
+<insert id="fileInsert" parameterType="com.company.VO.blogVO" useGeneratedKeys="true" keyProperty="w_no">
+	<![CDATA[
+		INSERT INTO file(uuid, uploadPath, fileName, fileType, w_no) 
+		VALUES(#{uuid}, #{uploadPath}, #{fileName}, #{fileType}, #{w_no})
+	]]>
+</insert>
+
+<!-- 파일삭제 -->
+<delete id="fileDelete">
+	<![CDATA[
+		DELETE 
+		FROM file 
+		WHERE uuid = #{uuid}
+	]]>
+</delete>
+
+<!-- 글 목록 -->
+<select id="list" resultType="com.company.VO.blogVO">
+	<![CDATA[
+		SELECT * 
+		FROM writing
+		ORDER BY w_no desc
+	]]>
+</select>
+
+<!-- 글 갯수 -->
+<select id="writingCount" resultType="int">
+	<![CDATA[
+		SELECT COUNT(*)
+		FROM writing
+	]]>
+</select>
+
+<!-- 글 내용 -->
+<select id="content" resultType="com.company.VO.blogVO">
+	<![CDATA[
+		SELECT *
+		FROM writing
+		WHERE w_no = #{w_no}
+	]]>
+</select>
+
+<!-- 파일 출력 -->
+<select id="fileList" parameterType="Integer" resultType="com.company.VO.blogVO">
+	<![CDATA[
+		SELECT *
+		FROM file
+		WHERE w_no = #{w_no}
+	]]>	
+</select>
+
+<!-- 글 수정 -->
+<update id="modify">
+	<![CDATA[
+		UPDATE writing 
+		SET title = #{title}, content = #{content}, updatedate = sysdate() 
+		WHERE w_no = #{w_no}
+	]]>
+</update>
+
+<!-- 글 삭제 -->
+<delete id="delete">
+	<![CDATA[
+		DELETE 
+		FROM writing 
+		WHERE w_no = #{w_no}
+	]]>
+</delete>
+
+</mapper>
